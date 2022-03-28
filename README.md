@@ -4,5 +4,5 @@ AAM is a module for performing various Archetypal Analysis on locally stored dat
 This module is created by:
 - Andreas Bigom
 - Michael Harborg
-- ...
-- ...
+- Oliver Elmgreen
+- Marcus Presutti
