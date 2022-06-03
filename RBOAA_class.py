@@ -97,7 +97,7 @@ class _RBOAA:
 
         return loss
         
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False):
 
         ########## INITIALIZATION ##########
         self.loss = []
@@ -140,7 +140,7 @@ class _RBOAA:
         X_hat_f = self._calculate_X_hat(X_tilde_f,A_f,B_f)
         end = timer()
         time = round(end-start,2)
-        result = _OAA_result(A_f,B_f,X,n_iter,b_f,Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"RBOAA")
+        result = _OAA_result(A_f,B_f,X,n_iter,b_f,Z_f,X_tilde_f,Z_tilde_f,X_hat_f,self.loss,K,time,columns,"RBOAA",with_synthetic_data=with_synthetic_data)
 
         if not mute:
             result._print()
