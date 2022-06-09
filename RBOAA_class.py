@@ -73,7 +73,7 @@ class _RBOAA:
 
         D_cdf = stand_norm.cdf(D)
         P = D_cdf[1:]-D_cdf[:len(D)-1]
-        inverse_log_P = -torch.log(P)
+        inverse_log_P = -torch.log(P+1e-16)
 
         N_arange = [n for n in range(N) for m in range(M)]
         M_arange = [m for m in range(M) for n in range(N)]
@@ -123,7 +123,7 @@ class _RBOAA:
                 loading_bar._update()
             optimizer.zero_grad()
             L = self._error(Xt,A_non_constraint,B_non_constraint,b_non_constraint,sigma_non_constraint,J)
-            self.loss.append(L)
+            self.loss.append(L.detach().numpy())
             L.backward()
             optimizer.step() 
         
