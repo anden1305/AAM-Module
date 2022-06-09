@@ -53,6 +53,7 @@ class _RBOAA:
         N = len(Xt[0,:])
         M = len(Xt)
         J = len(b[0,:])
+        
         D = torch.rand(J+2,N,M)
 
         for j in range(J+2):
@@ -105,7 +106,7 @@ class _RBOAA:
         if not mute:
             loading_bar = _loading_bar(n_iter, "Response Bias Ordinal Arhcetypal Analysis")
         N, _ = X.T.shape
-        J = int((np.max(X)-np.min(X))+1)
+        J = int((np.max(X)-np.min(X))+1)     ### THIS WAS REMOVED IN V1 ###
         Xt = torch.autograd.Variable(torch.tensor(X), requires_grad=False)
         A_non_constraint = torch.autograd.Variable(torch.rand(K, N), requires_grad=True)
         B_non_constraint = torch.autograd.Variable(torch.rand(N, K), requires_grad=True)
