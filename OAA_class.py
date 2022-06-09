@@ -57,7 +57,7 @@ class _OAA:
 
         N = len(X)
         M = len(X[0,:])
-
+        
         stand_norm = torch.distributions.normal.Normal(torch.tensor([0.0]), torch.tensor([1.0]))
         D_cdf = stand_norm.cdf(D)
         P = D_cdf[1:]-D_cdf[:len(D)-1]
