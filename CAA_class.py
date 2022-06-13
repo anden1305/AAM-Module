@@ -20,7 +20,7 @@ class _CAA:
         m = nn.Softmax(dim=0)
         return m(A)
     
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False):
 
         ########## INITIALIZATION ##########
         self.RSS = []
@@ -43,7 +43,16 @@ class _CAA:
             self.RSS.append(L.detach().numpy())
             L.backward()
             optimizer.step()
-            
+
+            ########## EARLY STOPPING ##########
+            if i % 25 == 0 and early_stopping:
+                if len(self.RSS) > 200 and (self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]) < ((self.RSS[0]-self.RSS[-1])*1e-4):
+                    if not mute:
+                        loading_bar._kill()
+                        print("Analysis ended due to early stopping.\n")
+                    break
+        
+        
 
         ########## POST ANALYSIS ##########
         A_f = self._apply_constraints(A).detach().numpy()

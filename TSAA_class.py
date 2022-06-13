@@ -14,24 +14,23 @@ class _TSAA:
     RSS = []    
     
     def _logOdds(self, X):
-        Ordinals = range(min(X.flatten()), max(X.flatten()+1))
-    
+
+        Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
         probs = [(np.count_nonzero(X.flatten() == e))/len(X.flatten()) for e in Ordinals]
         baseline = max(probs)
-    
         logvals = [np.log(probs[i]/baseline) for i in range(len(probs))]
+
         return logvals
     
     def _applySoftmax(self,M):
         return softmax(M)
     
     def _projectOrdinals(self, X):
+        
         M, N = X.shape
-        
         X_thilde = np.empty((M, N))
-        
         theta = self._applySoftmax(self._logOdds(X))
-        Ordinals = range(min(X.flatten()), max(X.flatten()+1))
+        Ordinals = range(int(min(X.flatten())), int(max(X.flatten()+1)))
         for i in range(M):
             for j in range(N):
                 idx = X[i,j]-1
@@ -47,7 +46,7 @@ class _TSAA:
         return m(A)
     
     ############# Two-step ordinal AA #############
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns, with_synthetic_data = False):
+    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns, with_synthetic_data = False, early_stopping = False):
         
         ##### Project the data #####
         X = self._projectOrdinals(X)
@@ -74,6 +73,14 @@ class _TSAA:
             self.RSS.append(L.detach().numpy())
             L.backward()
             optimizer.step()
+            
+            ########## EARLY STOPPING ##########
+            if i % 25 == 0 and early_stopping:
+                if len(self.RSS) > 200 and (self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]) < ((self.RSS[0]-self.RSS[-1])*1e-4):
+                    if not mute:
+                        loading_bar._kill()
+                        print("Analysis ended due to early stopping.\n")
+                    break
             
 
         ########## POST ANALYSIS ##########

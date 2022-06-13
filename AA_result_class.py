@@ -14,7 +14,7 @@ class _CAA_result:
         self.B = B
         self.X = X
         self.X_hat  = X_hat
-        self.n_iter = n_iter
+        self.n_iter = len(RSS)
         self.RSS = RSS
         self.Z = Z
         self.K = K
@@ -24,12 +24,16 @@ class _CAA_result:
         self.with_synthetic_data = with_synthetic_data
 
     def _print(self):
-        print("/////////////// INFORMATION ABOUT CONVENTIONAL ARCHETYPAL ANALYSIS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
-        print(f"▣ The Conventional Archetypal Analysis was computed using {self.K} archetypes.")
-        print(f"▣ The Conventional Archetypal Analysis was computed on {len(self.X)} attributes.")
-        print(f"▣ The Conventional Archetypal Analysis was computed on {len(self.X[0,:])} subjects.")
-        print(f"▣ The Conventional Archetypal Analysis ran for {self.n_iter} itterations.")
-        print(f"▣ The Conventional Archetypal Analysis took {self.time} seconds to complete.")
+        if self.type == "CAA":
+            type_name = "Conventional Archetypal"
+        else:
+            type_name = "Two Step Archetypal"
+        print("/////////////// INFORMATION ABOUT " + type_name.upper() + " ANALYSIS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
+        print(f"▣ The " + type_name + " Analysis was computed using " + str(self.K) + " archetypes.")
+        print(f"▣ The " + type_name + " Analysis was computed on " + str(len(self.X)) + " attributes.")
+        print(f"▣ The " + type_name + " Analysis was computed on " + str(len(self.X[0,:])) + " subjects.")
+        print(f"▣ The " + type_name + " Analysis ran for " + str(self.n_iter) + " iterations.")
+        print(f"▣ The " + type_name + " Analysis took " + str(self.time) + " seconds to complete.")
         print(f"▣ The final RSS was: {self.RSS[-1]}.")
 
     def _plot(self,plot_type, attributes, archetype_number, types, weighted):
@@ -63,12 +67,13 @@ class _OAA_result:
 
     plots = _plots()
     
-    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, time, columns,type, with_synthetic_data = False):
+    def __init__(self, A, B, X, n_iter, b, Z, X_tilde, Z_tilde, X_hat, loss, K, time, columns,type,sigma, with_synthetic_data = False):
         self.A = A
         self.B = B
         self.X = X
-        self.n_iter = n_iter
+        self.n_iter = len(loss)
         self.b = b
+        self.sigma = sigma
         self.X_tilde = X_tilde
         self.Z_tilde = Z_tilde
         self.X_hat = X_hat
@@ -81,12 +86,17 @@ class _OAA_result:
         self.with_synthetic_data = with_synthetic_data
 
     def _print(self):
-        print("/////////////// INFORMATION ABOUT ORDINAL ARCHETYPAL ANALYSIS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
-        print(f"▣ The Ordinal Archetypal Analysis was computed using {self.K} archetypes.")
-        print(f"▣ The Ordinal Archetypal Analysis was computed on {len(self.X)} attributes.")
-        print(f"▣ The Ordinal Archetypal Analysis was computed on {len(self.X[0,:])} subjects.")
-        print(f"▣ The Ordinal Archetypal Analysis ran for {self.n_iter} itterations.")
-        print(f"▣ The Ordinal Archetypal Analysis took {self.time} seconds to complete.")
+        if self.type == "RBOAA":
+            type_name = "Response Bias Ordinal Archetypal"
+        else:
+            type_name = "Ordinal Archetypal"
+        
+        print("/////////////// INFORMATION ABOUT " + type_name.upper() + " ANALYSIS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
+        print(f"▣ The " + type_name + " Analysis was computed using " + str(self.K) + " archetypes.")
+        print(f"▣ The " + type_name + " Analysis was computed on " + str(len(self.X)) + " attributes.")
+        print(f"▣ The " + type_name + " Analysis was computed on " + str(len(self.X[0,:])) + " subjects.")
+        print(f"▣ The " + type_name + " Analysis ran for " + str(self.n_iter) + " iterations.")
+        print(f"▣ The " + type_name + " Analysis took " + str(self.time) + " seconds to complete.")
         print(f"▣ The final loss was: {self.loss[-1]}.")
     
     def _plot(self,plot_type, attributes, archetype_number, types, weighted):
