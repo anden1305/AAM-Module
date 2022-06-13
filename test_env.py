@@ -187,4 +187,3 @@ plt.legend()
 plt.title('Loss for increasing noise no RB', fontsize = 22)
 
 
-
