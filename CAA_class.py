@@ -10,8 +10,6 @@ from AA_result_class import _CAA_result
 
 ########## CONVENTIONAL ARCHETYPAL ANALYSIS CLASS ##########
 class _CAA:
-    
-    RSS = []
 
     def _error(self, X,B,A):
         return torch.norm(X - X@B@A, p='fro')**2
@@ -20,7 +18,7 @@ class _CAA:
         m = nn.Softmax(dim=0)
         return m(A)
     
-    def _compute_archetypes(self, X, K, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False):
+    def _compute_archetypes(self, X, K, p, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False, for_hotstart_usage = False):
 
         ########## INITIALIZATION ##########
         self.RSS = []
@@ -31,7 +29,8 @@ class _CAA:
         Xt = torch.tensor(X,requires_grad=False).float()
         A = torch.autograd.Variable(torch.rand(K, N), requires_grad=True)
         B = torch.autograd.Variable(torch.rand(N, K), requires_grad=True)
-        optimizer = optim.Adam([A, B], amsgrad = True, lr = 0.01)
+        optimizer = optim.Adam([A, B], amsgrad = True, lr = lr)
+        
 
 
         ########## ANALYSIS ##########
@@ -61,9 +60,12 @@ class _CAA:
         X_hat_f = X@B_f@A_f
         end = timer()
         time = round(end-start,2)
-        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, time,columns,"CAA",with_synthetic_data = with_synthetic_data)
+        result = _CAA_result(A_f, B_f, X, X_hat_f, n_iter, self.RSS, Z_f, K, p, time,columns,"CAA",with_synthetic_data = with_synthetic_data)
 
         if not mute:
             result._print()
 
-        return result
+        if not for_hotstart_usage:
+            return result
+        else:
+            return A.detach().numpy(), B.detach().numpy()
