@@ -365,8 +365,8 @@ class _plots:
         
         archetype = type_values
 
-        ANGLES = np.linspace(0.05, 2 * np.pi - 0.05, len(archetype), endpoint=False)
-        width = 1/(len(archetype)/6)
+        ANGLES = np.linspace(0.0, 2 * np.pi - 0.0, len(archetype), endpoint=False)
+        width = 1/(len(archetype)/6.3)
 
         fig, ax = plt.subplots(figsize=(9, 12.6), subplot_kw={"projection": "polar"})
         fig.patch.set_facecolor("white")
@@ -390,3 +390,5 @@ class _plots:
             plt.show()
         else:
             plt.savefig("{0}.png".format(filename),dpi=300)
+
+        
