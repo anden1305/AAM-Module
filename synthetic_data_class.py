@@ -3,8 +3,10 @@ from scipy.stats import norm
 import pickle
 import torch
 
+########## CLASS FOR CREATING SYNTHETIC DATA  ##########
 class _synthetic_data:
     
+    ########## INITIALIZATION - CREATES THE DATA ##########
     def __init__(self, N, M ,K, p, sigma, rb, a_param, b_param, sigma_std = 0):
         
         self.N = N
@@ -14,11 +16,12 @@ class _synthetic_data:
         self.columns = ["SQ"+str(i) for i in range(1, M+1)]
         self.X, self.Z, self.Z_alpha, self.A, self.betas = self.X(N=N, M=M, K=K, p=p, sigma=sigma, rb=rb, a_param=a_param, b_param=b_param, sigma_std = sigma_std)
         
-    # If there's response bias, sample from a dirichlet distribution.
+    ########## IF THERE IS RESPONSE BIAS IN THE DATA ##########
     def biasedBetas(self, N, p, b_param):
         b = np.array([b_param]*p)
         return np.random.dirichlet(b, size=N)
     
+    ########## CONTSTRAINTS ON THE RESPONSE BIAS BETAS ##########
     def betaConstraintsBias(self, betas):
         N, J = betas.shape
         new_betas = np.empty((N,J))
@@ -32,6 +35,7 @@ class _synthetic_data:
         # Return and remove the column of ones
         return new_betas[:,:-1]
     
+    ########## CONSTRAINTS ON THE NON RESOPNS BIAS BETAS ##########
     def betaConstraints(self, betas):
    
        new_betas = np.empty(len(betas))
@@ -41,6 +45,7 @@ class _synthetic_data:
    
        return new_betas[:-1]
    
+    ########## SOFTPLUS HELPER FUNCTION ##########
     def softplus(self, sigma, sigma_std):
         if sigma_std == 0:
             return np.log(1 + np.exp(sigma))
@@ -51,8 +56,7 @@ class _synthetic_data:
             sigmasMatrix  = np.repeat(sigmas, self.M, axis=1)
             return sigmasMatrix
 
-
-    # rb = response bias
+    ########## HELPER FUNCTION, CALCULATES THE Z ARCEHTYPE MATRIX ##########
     def get_Z(self, N, M, K, p, rb, b_param):
         # Ensure reproducibility
         np.random.seed(42)
@@ -83,6 +87,7 @@ class _synthetic_data:
             
         return Z_ordinal, Z_alpha, betas
 
+    ########## HELPER FUNCTION, CALCULATES THE A LINEAZR COMBINATION MATRIX ##########
     def get_A(self, N, K, a_param):
         np.random.seed(42) # set another seed :)
         
@@ -93,6 +98,7 @@ class _synthetic_data:
         alpha = np.array([a_param]*K)
         return np.random.dirichlet(alpha, size=N).transpose()
     
+    ########## HELPER FUNCTION, CALCULATES THE D DENSITY MATRIX ##########
     def get_D(self, X_rec, betas, sigma, rb):
         
         M, N = X_rec.shape
@@ -140,6 +146,7 @@ class _synthetic_data:
         # print("D_0", D[0])
         return D - np.mean(D[1:-1])
 
+    ########## HELPER FUNCTION, CALCULATES THE PROBABILITY FROM THE DENSITY MATRIX ##########
     def Probs(self, D):
         
         J, M, N = D.shape
@@ -151,6 +158,7 @@ class _synthetic_data:
                 
         return probs
 
+    ########## HELPER FUNCTION, SAMPLES FROM PROBABILITY MATRIX TO GET CATEGORICAL ##########
     def toCategorical(self, probs):
         
         categories = np.arange(1, len(probs)+1)    
@@ -165,7 +173,7 @@ class _synthetic_data:
         X_cat = X_cat.astype(int)
         return X_cat
     
-    # function combining the previous methods to get X_thilde
+    ########## CALUCLATES DATA WITH HELP OF ALL OTHER FUNCTIONS ##########
     def X(self, M, N, K, p, sigma, rb=False, a_param=1, b_param=100, sigma_std = 0):
         
         Z_ordinal, Z_alpha, betas = self.get_Z(N=N,M=M, K=K, p=p, rb=rb, b_param=b_param)
@@ -179,7 +187,8 @@ class _synthetic_data:
         
         
         return X_final, Z_ordinal, Z_alpha, A, betas
-        
+
+    ########## SAVES THE DATA LOCALLY ON PC ########## 
     def _save(self,type,filename):
         file = open("synthetic_results/" + type + "_" + filename + '_metadata' + '.obj','wb')
         pickle.dump(self, file)

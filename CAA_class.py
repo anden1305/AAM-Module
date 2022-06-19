@@ -11,13 +11,22 @@ from AA_result_class import _CAA_result
 ########## CONVENTIONAL ARCHETYPAL ANALYSIS CLASS ##########
 class _CAA:
 
+    ########## HELPER FUNCTION // EARLY STOPPING ##########
+    def _early_stopping(self):
+        next_imp = self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]
+        prev_imp = (self.RSS[0]-self.RSS[-1])*1e-5
+        return next_imp < prev_imp
+
+    ########## HELPER FUNCTION // CALCULATE ERROR FOR EACH ITERATION ##########
     def _error(self, X,B,A):
         return torch.norm(X - X@B@A, p='fro')**2
     
+    ########## HELPER FUNCTION // A CONSTRAINTS ##########
     def _apply_constraints(self, A):
         m = nn.Softmax(dim=0)
         return m(A)
     
+    ########## COMPUTE ARCHETYPES FUNCTION OF CAA ##########
     def _compute_archetypes(self, X, K, p, n_iter, lr, mute,columns,with_synthetic_data = False, early_stopping = False, for_hotstart_usage = False):
 
         ########## INITIALIZATION ##########
@@ -45,7 +54,7 @@ class _CAA:
 
             ########## EARLY STOPPING ##########
             if i % 25 == 0 and early_stopping:
-                if len(self.RSS) > 200 and (self.RSS[-round(len(self.RSS)/100)]-self.RSS[-1]) < ((self.RSS[0]-self.RSS[-1])*1e-4):
+                if len(self.RSS) > 200 and self._early_stopping():
                     if not mute:
                         loading_bar._kill()
                         print("Analysis ended due to early stopping.\n")

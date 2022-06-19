@@ -11,7 +11,7 @@ import pandas as pd
 ########## PLOTS CLASS ##########
 class _plots:
 
-    def _PCA_scatter_plot(self,Z,X,type):
+    def _PCA_scatter_plot(self,Z,X,type,save_fig,filename):
         
         pca = PCA(n_components=2)
         pca.fit(Z.T)
@@ -27,10 +27,14 @@ class _plots:
         plt.ylabel("Principal Component 2", fontsize=15)
         plt.title(f"PCA Scatter Plot of {type}", fontsize = 20)
         plt.legend(prop={'size': 15})
-        plt.show()
+
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
 
 
-    def _attribute_scatter_plot(self,Z,X,attributes,type,p):
+    def _attribute_scatter_plot(self,Z,X,attributes,type,p, save_fig, filename):
         
         plt.rcParams["figure.figsize"] = (10,10)
         plt.scatter(X[attributes[0]-1,:]*p, X[attributes[1]-1,:]*p, c ="black", s = 1)
@@ -40,18 +44,26 @@ class _plots:
         plt.ylabel(f"Attribute {attributes[1]}", fontsize=15)
         plt.legend(prop={'size': 15})
         plt.title(f"Attribute Scatter Plot of {type}", fontsize = 20)
-        plt.show()
+
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
 
 
-    def _loss_plot(self,loss,type):
+    def _loss_plot(self,loss,type, save_fig, filename):
         plt.plot(loss, c="#2c6c8c")
         plt.xlabel(f"Iteration of {type}")
         plt.ylabel(f"Loss of {type}")
         plt.title(f"Loss w.r.t. Itteration of {type}")
-        plt.show()
+        
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
 
 
-    def _mixture_plot(self,Z,A,type):
+    def _mixture_plot(self,Z,A,type, save_fig, filename):
 
         plt.rcParams["figure.figsize"] = (10,10)
         fig = plt.figure()
@@ -88,10 +100,14 @@ class _plots:
         plt.title(f"Mixture Plot of {type}", fontsize = 20)
         plt.scatter(points_x, points_y, c ="black", s = 3, zorder=5)
         plt.legend()
-        plt.show()
+        
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
 
 
-    def _barplot(self,Z,columns,archetype_number,type,p):
+    def _barplot(self,Z,columns, archetype_number,type,p, save_fig, filename):
         
         plt.rcParams["figure.figsize"] = (10,10)
         archetype = Z.T[archetype_number-1]
@@ -107,10 +123,14 @@ class _plots:
         plt.ylim(0, p+0.5)
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
         fig.set_size_inches(10, 10)
-        plt.show()
+        
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
 
 
-    def _barplot_all(self,Z,columns,type, p):
+    def _barplot_all(self,Z,columns,type, p,  save_fig, filename):
         plt.rcParams["figure.figsize"] = (10,10)
         data = []
         names = ["Attributes"]
@@ -132,10 +152,14 @@ class _plots:
         plt.ylim(0.0, p+0.5)
         plt.ylabel(f"Value")
         plt.title(f"Value-Distribution over All Archetypes")
-        plt.show()
+        
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
 
 
-    def _typal_plot(self, Z, types, weighted):
+    def _typal_plot(self, Z, types, weighted,  save_fig, filename):
         plt.rcParams["figure.figsize"] = (10,10)
         fig, ax = plt.subplots()
         type_names = types.keys()
@@ -149,7 +173,7 @@ class _plots:
             label_values = []
             for archetype in Z.T:
                 archetype_value = 0
-                for i in types[label]:
+                for i in types[label-1]:
                     archetype_value += archetype[i]
                 if weighted in ["equal","equal_norm"]:
                     archetype_value = archetype_value / len(types[label])
@@ -171,19 +195,47 @@ class _plots:
         ax.set_title('Typal Composition of Archetypes')
         ax.legend()
 
-        plt.show()
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
         
 
-    def _pie_chart(self, A, indexes):
+    def _pie_chart(self, A, indexes, attribute_indexes, archetype_dataframe,  save_fig, filename,title):
 
         data = []
 
-        for i in range(len(indexes)):
-            datapoint = A.T[indexes[i]]
-            if len(data) == 0:
-                data = datapoint
-            else:
-                data = data + datapoint / 2
+        if attribute_indexes == []:
+
+            for i in range(len(indexes)):
+                datapoint = A.T[indexes[i]]
+                if len(data) == 0:
+                    data = datapoint
+                else:
+                    data = data + datapoint / 2
+
+        else:
+            data_subset = archetype_dataframe.copy()
+
+            for pair in attribute_indexes:
+                if pair[1] == "=":
+                    data_subset = data_subset.loc[data_subset[pair[0]] == pair[2]]
+                elif pair[1] == "<":
+                    data_subset = data_subset.loc[data_subset[pair[0]] < pair[2]]
+                elif pair[1] == ">":
+                    data_subset = data_subset.loc[data_subset[pair[0]] > pair[2]]
+            
+            if data_subset.shape[0] < 1:
+                print("\nThere are no datapoints with the value(s) given by the 'attribute_indexes' parameter.")
+                return
+
+            for i in range(data_subset.shape[0]):
+                datapoint = A.T[i]
+                if len(data) == 0:
+                    data = datapoint
+                else:
+                    data = data + datapoint / 2
+
 
         labels = []
         explode = []
@@ -195,20 +247,51 @@ class _plots:
                 explode.append(0.0)
 
         plt.pie(data,explode=tuple(explode), labels = labels, shadow=True, startangle=90, autopct='%1.1f%%')
-        plt.title("Pie Chart of Archetype Distribution on Given Subset of Data")
-        plt.show()
-    
+        if title == "":
+            plt.title("Pie Chart of Archetype Distribution on Given Subset of Data")
+        else:
+            plt.title(title)
+        
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
+        
 
-    def _attribute_distribution(self, A, Z, indexes, columns, p, type):
-
+    def _attribute_distribution(self, A, Z, indexes, columns, p, type, attribute_indexes, archetype_dataframe,  save_fig, filename):
+        
         archetype_distribution = []
 
-        for i in range(len(indexes)):
-            datapoint = A.T[indexes[i]]
-            if len(archetype_distribution) == 0:
-                archetype_distribution = datapoint
-            else:
-                archetype_distribution = archetype_distribution + datapoint / 2
+        if attribute_indexes == []:
+
+            for i in range(len(indexes)):
+                datapoint = A.T[indexes[i]]
+                if len(archetype_distribution) == 0:
+                    archetype_distribution = datapoint
+                else:
+                    archetype_distribution = archetype_distribution + datapoint / 2
+
+        else:
+            data_subset = archetype_dataframe.copy()
+
+            for pair in attribute_indexes:
+                if pair[1] == "=":
+                    data_subset = data_subset.loc[data_subset[pair[0]] == pair[2]]
+                elif pair[1] == "<":
+                    data_subset = data_subset.loc[data_subset[pair[0]] < pair[2]]
+                elif pair[1] == ">":
+                    data_subset = data_subset.loc[data_subset[pair[0]] > pair[2]]
+            
+            if data_subset.shape[0] < 1:
+                print("\nThere are no datapoints with the value {0} of attribute {1}.\n".format(attribute_indexes[1],attribute_indexes[0]))
+                return
+
+            for i in range(data_subset.shape[0]):
+                datapoint = A.T[i]
+                if len(archetype_distribution) == 0:
+                    archetype_distribution = datapoint
+                else:
+                    archetype_distribution = archetype_distribution + datapoint / 2
         
         archetype_distribution = archetype_distribution/np.sum(archetype_distribution)
 
@@ -234,4 +317,46 @@ class _plots:
         plt.ylim(0, p+0.5)
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
         fig.set_size_inches(10, 10)
+        
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename))
+        
+    
+    def _circular_typal_barplot(self, type, Z, types, archetype_number,columns,p):
+
+        archetype = Z.T[archetype_number-1]
+        if type in ["OAA","RBOAA"]:
+            archetype *=p
+
+        type_values = []
+        type_names = types.keys()
+        for type in type_names:
+            type_value = 0
+            for attribute in types[type]:
+                type_value += archetype[attribute-1]
+            type_values.append(type_value/len(types[type]))
+        
+        
+        archetype = type_values
+
+        ANGLES = np.linspace(0.05, 2 * np.pi - 0.05, len(archetype), endpoint=False)
+        width = 1/(len(archetype)/6)
+
+        fig, ax = plt.subplots(figsize=(9, 12.6), subplot_kw={"projection": "polar"})
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("#dae5eb")
+
+        ax.set_theta_offset(1.2 * np.pi / 2)
+        ax.set_ylim(0, p)
+
+        ax.bar(ANGLES, archetype, alpha=0.9, width=width, zorder=10)
+        ax.vlines(ANGLES, 0, p, ls=(0, (4, 4)), zorder=11)
+
+        ax.set_xticks(ANGLES)
+        ax.set_xticklabels(type_names, size=12)
+
+        ax.set_title("Circular Typal Barplot of Archetype {0}".format(archetype_number),size = 25)
+
         plt.show()
