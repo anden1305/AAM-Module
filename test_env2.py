@@ -41,4 +41,4 @@ types10 = {'Self-Direction'   : [1,11],
            'Universalism'     : [3,8,19]
            }
 
-AAM.plot("RBOAA","circular_typal_barplot",types=types4)
+AAM.plot("RBOAA","circular_typal_barplot",archetype_number=2,types=types10)
