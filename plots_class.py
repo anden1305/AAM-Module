@@ -11,7 +11,7 @@ import pandas as pd
 ########## PLOTS CLASS ##########
 class _plots:
 
-    def _PCA_scatter_plot(self,Z,X,type,save_fig,filename):
+    def _PCA_scatter_plot(self,Z,X,type,save_fig,filename, title):
         
         pca = PCA(n_components=2)
         pca.fit(Z.T)
@@ -25,16 +25,19 @@ class _plots:
             plt.scatter(Z_pca[a,0], Z_pca[a,1], marker ="^", s = 500, label="Archetype {0}".format(a+1))
         plt.xlabel("Principal Component 1", fontsize=15)
         plt.ylabel("Principal Component 2", fontsize=15)
-        plt.title(f"PCA Scatter Plot of {type}", fontsize = 20)
+        if title == "":
+            plt.title(f"PCA Scatter Plot of {type}", fontsize = 20)
+        else:
+            plt.title(title, fontsize = 20)
         plt.legend(prop={'size': 15})
 
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
 
 
-    def _attribute_scatter_plot(self,Z,X,attributes,type,p, save_fig, filename):
+    def _attribute_scatter_plot(self,Z,X,attributes,type,p, save_fig, filename,title):
         
         plt.rcParams["figure.figsize"] = (10,10)
         plt.scatter(X[attributes[0]-1,:]*p, X[attributes[1]-1,:]*p, c ="black", s = 1)
@@ -43,27 +46,33 @@ class _plots:
         plt.xlabel(f"Attribute {attributes[0]}", fontsize=15)
         plt.ylabel(f"Attribute {attributes[1]}", fontsize=15)
         plt.legend(prop={'size': 15})
-        plt.title(f"Attribute Scatter Plot of {type}", fontsize = 20)
+        if title == "":
+            plt.title(f"Attribute Scatter Plot of {type}", fontsize = 20)
+        else:
+            plt.title(title, fontsize = 20)
 
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
 
 
-    def _loss_plot(self,loss,type, save_fig, filename):
+    def _loss_plot(self,loss,type, save_fig, filename,title):
         plt.plot(loss, c="#2c6c8c")
         plt.xlabel(f"Iteration of {type}")
         plt.ylabel(f"Loss of {type}")
-        plt.title(f"Loss w.r.t. Itteration of {type}")
+        if title == "":
+            plt.title(f"Loss w.r.t. Itteration of {type}")
+        else:
+            plt.title(title)
         
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
 
 
-    def _mixture_plot(self,Z,A,type, save_fig, filename):
+    def _mixture_plot(self,Z,A,type, save_fig, filename,title):
 
         plt.rcParams["figure.figsize"] = (10,10)
         fig = plt.figure()
@@ -97,17 +106,20 @@ class _plots:
         ax.set_xlim(-1.1,1.1)
         ax.set_ylim(-1.1,1.1)
         ax.set_aspect('equal')
-        plt.title(f"Mixture Plot of {type}", fontsize = 20)
-        plt.scatter(points_x, points_y, c ="black", s = 3, zorder=5)
+        if title == "":
+            plt.title(f"Mixture Plot of {type}", fontsize = 20)
+        else:
+            plt.title(title, fontsize = 20)
+        plt.scatter(points_x, points_y, c ="black", s = 1, zorder=5)
         plt.legend()
         
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
 
 
-    def _barplot(self,Z,columns, archetype_number,type,p, save_fig, filename):
+    def _barplot(self,Z,columns, archetype_number,type,p, save_fig, filename,title):
         
         plt.rcParams["figure.figsize"] = (10,10)
         archetype = Z.T[archetype_number-1]
@@ -116,7 +128,10 @@ class _plots:
         fig, ax = plt.subplots()
         ax.set_ylabel('Value')
         plt.xlabel('Attributes')
-        ax.set_title(f"Value-Distribution of Archeype {archetype_number}")
+        if title == "":
+            ax.set_title(f"Value-Distribution of Archeype {archetype_number}")
+        else:
+            ax.set_title(title)
         ax.bar(np.arange(len(archetype)),archetype)
         ax.set_xticks(np.arange(len(archetype)))
         ax.set_xticklabels(labels=columns)
@@ -127,10 +142,10 @@ class _plots:
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
 
 
-    def _barplot_all(self,Z,columns,type, p,  save_fig, filename):
+    def _barplot_all(self,Z,columns,type, p,  save_fig, filename,title):
         plt.rcParams["figure.figsize"] = (10,10)
         data = []
         names = ["Attributes"]
@@ -151,15 +166,18 @@ class _plots:
         df.plot(x="Attributes", y=names[1:], kind="bar",figsize=(10,10))
         plt.ylim(0.0, p+0.5)
         plt.ylabel(f"Value")
-        plt.title(f"Value-Distribution over All Archetypes")
+        if title == "":
+            plt.title(f"Value-Distribution over All Archetypes")
+        else:
+            plt.title(title)
         
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
 
 
-    def _typal_plot(self, Z, types, weighted,  save_fig, filename):
+    def _typal_plot(self, Z, types, weighted,  save_fig, filename,title):
         plt.rcParams["figure.figsize"] = (10,10)
         fig, ax = plt.subplots()
         type_names = types.keys()
@@ -192,13 +210,16 @@ class _plots:
         for i in range(len(values)):
             ax.bar(labels, values_new[i], width, bottom=bottoms[i], label=type_names_display[i])
         ax.set_ylabel('Value')
-        ax.set_title('Typal Composition of Archetypes')
+        if title == "":
+            ax.set_title('Typal Composition of Archetypes')
+        else:
+            ax.set_title(title)
         ax.legend()
 
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
         
 
     def _pie_chart(self, A, indexes, attribute_indexes, archetype_dataframe,  save_fig, filename,title):
@@ -255,10 +276,10 @@ class _plots:
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
         
 
-    def _attribute_distribution(self, A, Z, indexes, columns, p, type, attribute_indexes, archetype_dataframe,  save_fig, filename):
+    def _attribute_distribution(self, A, Z, indexes, columns, p, type, attribute_indexes, archetype_dataframe,  save_fig, filename, title):
         
         archetype_distribution = []
 
@@ -310,7 +331,10 @@ class _plots:
         fig, ax = plt.subplots()
         ax.set_ylabel('Value')
         plt.xlabel('Attributes')
-        ax.set_title(f"Value-Distribution of Archeype")
+        if title == "":
+            ax.set_title(f"Value-Distribution of Archetype")
+        else:
+            ax.set_title(title)
         ax.bar(np.arange(len(attribute_distribution)),attribute_distribution)
         ax.set_xticks(np.arange(len(attribute_distribution)))
         ax.set_xticklabels(labels=columns)
@@ -321,10 +345,10 @@ class _plots:
         if not save_fig:
             plt.show()
         else:
-            plt.savefig("{0}.png".format(filename))
+            plt.savefig("{0}.png".format(filename),dpi=300)
         
     
-    def _circular_typal_barplot(self, type, Z, types, archetype_number,columns,p):
+    def _circular_typal_barplot(self, type, Z, types, archetype_number,columns,p, save_fig, filename, title):
 
         archetype = Z.T[archetype_number-1]
         if type in ["OAA","RBOAA"]:
@@ -357,6 +381,12 @@ class _plots:
         ax.set_xticks(ANGLES)
         ax.set_xticklabels(type_names, size=12)
 
-        ax.set_title("Circular Typal Barplot of Archetype {0}".format(archetype_number),size = 25)
+        if title == "":
+            ax.set_title("Circular Typal Barplot of Archetype {0}".format(archetype_number),size = 25)
+        else:
+            ax.set_title(title,size = 25)
 
-        plt.show()
+        if not save_fig:
+            plt.show()
+        else:
+            plt.savefig("{0}.png".format(filename),dpi=300)

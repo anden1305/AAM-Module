@@ -41,23 +41,25 @@ class _CAA_result:
     def _plot(self,plot_type, attributes, archetype_number, types, weighted, subject_indexes, attribute_indexes, archetype_dataframe, save_figure, filename,title):
         
         if plot_type == "PCA_scatter_plot":
-            self.plots._PCA_scatter_plot(self.Z,self.X_hat,self.type, save_figure, filename)
+            self.plots._PCA_scatter_plot(self.Z,self.X_hat,self.type, save_figure, filename,title)
         elif plot_type == "attribute_scatter_plot":
-            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes,self.type,self.p, save_figure, filename)
+            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes,self.type,self.p, save_figure, filename,title)
         elif plot_type == "loss_plot":
-            self.plots._loss_plot(self.loss,self.type,  save_figure, filename)
+            self.plots._loss_plot(self.loss,self.type,  save_figure, filename,title)
         elif plot_type == "mixture_plot":
-            self.plots._mixture_plot(self.Z,self.A,self.type,  save_figure, filename)
+            self.plots._mixture_plot(self.Z,self.A,self.type,  save_figure, filename,title)
         elif plot_type == "barplot":
-            self.plots._barplot(self.Z,self.columns,archetype_number,self.type, self.p,  save_figure, filename)
+            self.plots._barplot(self.Z,self.columns,archetype_number,self.type, self.p,  save_figure, filename,title)
         elif plot_type == "barplot_all":
-            self.plots._barplot_all(self.Z,self.columns, self.type, self.p,  save_figure, filename)
+            self.plots._barplot_all(self.Z,self.columns, self.type, self.p,  save_figure, filename,title)
         elif plot_type == "typal_plot":
-            self.plots._typal_plot(self.Z,types,weighted,  save_figure, filename)
+            self.plots._typal_plot(self.Z,types,weighted,  save_figure, filename,title)
         elif plot_type == "pie_chart":
             self.plots._pie_chart(self.A, subject_indexes, attribute_indexes, archetype_dataframe,  save_figure, filename,title)
         elif plot_type == "attribute_distribution":
-            self.plots._attribute_distribution(self.A,self.Z,subject_indexes,self.columns,self.p,self.type, attribute_indexes, archetype_dataframe,  save_figure, filename)
+            self.plots._attribute_distribution(self.A,self.Z,subject_indexes,self.columns,self.p,self.type, attribute_indexes, archetype_dataframe,  save_figure, filename,title)
+        elif plot_type == "circular_typal_barplot":
+            self.plots._circular_typal_barplot(self.type,self.Z, types, archetype_number,self.columns,self.p, save_figure, filename, title)
 
     def _save(self,filename):
         if not self.with_synthetic_data:
@@ -110,25 +112,25 @@ class _OAA_result:
     def _plot(self,plot_type, attributes, archetype_number, types, weighted, subject_indexes, attribute_indexes, archetype_dataframe, save_figure, filename,title):
         
         if plot_type == "PCA_scatter_plot":
-            self.plots._PCA_scatter_plot(self.Z,self.X_hat,self.type, save_figure, filename)
+            self.plots._PCA_scatter_plot(self.Z,self.X_hat,self.type, save_figure, filename,title)
         elif plot_type == "attribute_scatter_plot":
-            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes,self.type, self.p, save_figure, filename)
+            self.plots._attribute_scatter_plot(self.Z,self.X_hat,attributes,self.type, self.p, save_figure, filename,title)
         elif plot_type == "loss_plot":
-            self.plots._loss_plot(self.loss,self.type,  save_figure, filename)
+            self.plots._loss_plot(self.loss,self.type,  save_figure, filename,title)
         elif plot_type == "mixture_plot":
-            self.plots._mixture_plot(self.Z,self.A,self.type,  save_figure, filename)
+            self.plots._mixture_plot(self.Z,self.A,self.type,  save_figure, filename,title)
         elif plot_type == "barplot":
-            self.plots._barplot(self.Z,self.columns,archetype_number,self.type,self.p,  save_figure, filename)
+            self.plots._barplot(self.Z,self.columns,archetype_number,self.type,self.p,  save_figure, filename,title)
         elif plot_type == "barplot_all":
-            self.plots._barplot_all(self.Z,self.columns, self.type, self.p,  save_figure, filename)
+            self.plots._barplot_all(self.Z,self.columns, self.type, self.p,  save_figure, filename,title)
         elif plot_type == "typal_plot":
-            self.plots._typal_plot(self.Z,types,weighted,  save_figure, filename)
+            self.plots._typal_plot(self.Z,types,weighted,  save_figure, filename,title)
         elif plot_type == "pie_chart":
             self.plots._pie_chart(self.A,subject_indexes, attribute_indexes, archetype_dataframe,  save_figure, filename,title)
         elif plot_type == "attribute_distribution":
-            self.plots._attribute_distribution(self.A,self.Z,subject_indexes,self.columns,self.p,self.type,attribute_indexes, archetype_dataframe,  save_figure, filename)
+            self.plots._attribute_distribution(self.A,self.Z,subject_indexes,self.columns,self.p,self.type,attribute_indexes, archetype_dataframe,  save_figure, filename,title)
         elif plot_type == "circular_typal_barplot":
-            self.plots._circular_typal_barplot(self.type,self.Z, types, archetype_number,self.columns,self.p)
+            self.plots._circular_typal_barplot(self.type,self.Z, types, archetype_number,self.columns,self.p,save_figure, filename, title)
 
     def _save(self,filename):
         if not self.with_synthetic_data:
